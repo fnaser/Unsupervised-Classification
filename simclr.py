@@ -44,6 +44,7 @@ def main():
     # CUDNN
     print(colored('Set CuDNN benchmark', 'blue')) 
     torch.backends.cudnn.benchmark = True
+    torch.cuda.empty_cache()
     
     # Dataset
     print(colored('Retrieve dataset', 'blue'))

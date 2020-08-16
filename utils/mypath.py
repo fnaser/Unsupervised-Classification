@@ -8,11 +8,14 @@ import os
 class MyPath(object):
     @staticmethod
     def db_root_dir(database=''):
-        db_names = {'cifar-10', 'stl-10', 'cifar-20', 'imagenet', 'imagenet_50', 'imagenet_100', 'imagenet_200'}
+        db_names = {'cifar-10', 'stl-10', 'cifar-20', 'imagenet', 'imagenet_50', 'imagenet_100', 'imagenet_200', 'sewer'}
         assert(database in db_names)
 
+        if database == 'sewer':
+            return '/home/ubuntu/data/SewerDataset/'
+
         if database == 'cifar-10':
-            return '/path/to/cifar-10/'
+            return '/home/ubuntu/data/cifar-10/'
         
         elif database == 'cifar-20':
             return '/path/to/cifar-20/'

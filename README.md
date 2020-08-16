@@ -48,9 +48,9 @@ The configuration files can be found in the `configs/` directory. The training p
 
 For example, run the following commands sequentially to perform our method on CIFAR10:
 ```shell
-python simclr.py --config_env configs/your_env.yml --config_exp configs/pretext/simclr_cifar10.yml
-python scan.py --config_env configs/your_env.yml --config_exp configs/scan/scan_cifar10.yml
-python selflabel.py --config_env configs/your_env.yml --config_exp configs/selflabel/selflabel_cifar10.yml
+python simclr.py --config_env configs/env.yml --config_exp configs/pretext/simclr_cifar10.yml
+python scan.py --config_env configs/env.yml --config_exp configs/scan/scan_cifar10.yml
+python selflabel.py --config_env configs/env.yml --config_exp configs/selflabel/selflabel_cifar10.yml
 ```
 ### Remarks
 The provided hyperparameters are identical for CIFAR10, CIFAR100-20 and STL10. However, fine-tuning the hyperparameters can further improve the results. We list the most important hyperparameters of our method below:

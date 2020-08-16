@@ -52,13 +52,17 @@ def get_model(p, pretrain_path=None):
             from models.resnet_stl import resnet18
             backbone = resnet18()
         
+        elif p['train_db_name'] in ['sewer']:
+            from models.resnet_cifar import resnet18
+            backbone = resnet18()
+
         else:
             raise NotImplementedError
 
     elif p['backbone'] == 'resnet50':
         if 'imagenet' in p['train_db_name']:
             from models.resnet import resnet50
-            backbone = resnet50()  
+            backbone = resnet50()
 
         else:
             raise NotImplementedError 
@@ -132,6 +136,10 @@ def get_train_dataset(p, transform, to_augmented_dataset=False,
         from data.stl import STL10
         dataset = STL10(split=split, transform=transform, download=True)
 
+    elif p['train_db_name'] == 'sewer':
+        from data.sewernet import SewerNet
+        dataset = SewerNet(split='Training', transform=transform)
+
     elif p['train_db_name'] == 'imagenet':
         from data.imagenet import ImageNet
         dataset = ImageNet(split='train', transform=transform)
@@ -170,7 +178,11 @@ def get_val_dataset(p, transform=None, to_neighbors_dataset=False):
     elif p['val_db_name'] == 'stl-10':
         from data.stl import STL10
         dataset = STL10(split='test', transform=transform, download=True)
-    
+
+    elif p['val_db_name'] == 'sewer':
+        from data.sewernet import SewerNet
+        dataset = SewerNet(split='Validation', transform=transform)
+
     elif p['val_db_name'] == 'imagenet':
         from data.imagenet import ImageNet
         dataset = ImageNet(split='val', transform=transform)
@@ -226,7 +238,20 @@ def get_train_transformations(p):
             transforms.ToTensor(),
             transforms.Normalize(**p['augmentation_kwargs']['normalize'])
         ])
-    
+
+    elif p['augmentation_strategy'] == 'sewer':
+        # SimCLR paper (no 'normalize')
+        return transforms.Compose([
+            transforms.RandomResizedCrop(**p['augmentation_kwargs']['random_resized_crop']),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomApply([
+                transforms.ColorJitter(**p['augmentation_kwargs']['color_jitter'])
+            ], p=p['augmentation_kwargs']['color_jitter_random_apply']['p']),
+            transforms.RandomGrayscale(**p['augmentation_kwargs']['random_grayscale']),
+            transforms.ToTensor()
+            #transforms.Normalize(**p['augmentation_kwargs']['normalize'])
+        ])
+
     elif p['augmentation_strategy'] == 'ours':
         # Augmentation strategy from our paper 
         return transforms.Compose([
@@ -247,8 +272,8 @@ def get_train_transformations(p):
 def get_val_transformations(p):
     return transforms.Compose([
             transforms.CenterCrop(p['transformation_kwargs']['crop_size']),
-            transforms.ToTensor(), 
-            transforms.Normalize(**p['transformation_kwargs']['normalize'])])
+            transforms.ToTensor()]) 
+            #transforms.Normalize(**p['transformation_kwargs']['normalize'])]) TODO
 
 
 def get_optimizer(p, model, cluster_head_only=False):
